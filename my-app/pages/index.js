@@ -14,7 +14,7 @@ export default function Home() {
   const [tokenIdsMinted, setTokenIdsMinted] = useState("0");
   const web3ModalRef = useRef();
 
-  const presaleMint = async => {
+  const presaleMint = async () => {
     try {
       const signer = getProviderOrSigner(true);
       const whitelistContract = new Contract(NFT_CONTRACT_ADDRESS, abi, signer);
