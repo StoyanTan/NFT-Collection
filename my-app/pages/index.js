@@ -16,14 +16,17 @@ export default function Home() {
 
   const presaleMint = async () => {
     try {
-      const signer = getProviderOrSigner(true);
-      const whitelistContract = new Contract(NFT_CONTRACT_ADDRESS, abi, signer);
-
+      const signer = await getProviderOrSigner(true);
+      const whitelistContract = new Contract(
+        NFT_CONTRACT_ADDRESS,
+        abi,
+        signer
+      );
       const tx = await whitelistContract.presaleMint({
         value: utils.parseEther("0.01"),
       });
-
       setLoading(true);
+      // wait for the transaction to get mined
       await tx.wait();
       setLoading(false);
       window.alert("You successfully minted a Crypto Dev!");
@@ -63,7 +66,7 @@ export default function Home() {
 
   const startPresale = async () => {
     try {
-      const signer = getProviderOrSigner(true);
+      const signer = await getProviderOrSigner(true);
       const whitelistContract = new Contract(
         NFT_CONTRACT_ADDRESS,
         abi,
@@ -101,7 +104,6 @@ export default function Home() {
       const provider = await getProviderOrSigner();
       const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
       const _presaleEnded = await nftContract.presaleEnded();
-      // Date.now()/1000 returns the current time in seconds
       const hasEnded = _presaleEnded.lt(Math.floor(Date.now() / 1000));
       if (hasEnded) {
         setPresaleEnded(true);
@@ -117,21 +119,18 @@ export default function Home() {
 
   const getOwner = async () => {
     try {
-      const provider = getProviderOrSigner();
+      const provider = await getProviderOrSigner();
       const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
-
-      const _owner = nftContract.getOwner();
-      const signer = getProviderOrSigner(true);
-
+      const _owner = await nftContract.owner();
+      const signer = await getProviderOrSigner(true);
       const address = await signer.getAddress();
       if (address.toLowerCase() === _owner.toLowerCase()) {
         setIsOwner(true);
       }
-
     } catch (err) {
       console.error(err.message);
     }
-  }
+  };
 
   const getTokenIdsMinted = async () => {
     try {
